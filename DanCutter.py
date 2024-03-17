@@ -29,36 +29,41 @@ def gapAnalyser(note1,note2):
 
 def createFile(start,end,directory,diffName,ogFile):
     with open(f"{directory}{diffName}.osu", "w") as file:
-        dataLine = extractGeneralEditorData(ogFile)
+        dataLine = extractData(ogFile,0,'Version:')
         file.write(dataLine[0])
         file.write(f"Version:{diffName}\n")
-        dataLine = extractSourceTagsBeatmapID(ogFile,dataLine[1]+1)
+        dataLine = extractData(ogFile,dataLine[1]+1,'BeatmapSetID:')
         file.write(dataLine[0])
         file.write("BeatmapSetID:-1\n")
-        file.write("quoi")
+        dataLine = extractData(ogFile,dataLine[1]+1,'[TimingPoints]')
+        file.write(dataLine[0])
+        dataLine = extractData(ogFile,dataLine[1]+1,'[HitObjects]')
+        print(dataLine[0]) # Process Timing Points
+        return
+        file.write('[HitObjects]\n')
+        file.write(extractNoteData(ogFile,start,end))
         open_in_notepad(f"{directory}{diffName}.osu")
-    
-def extractSourceTagsBeatmapID(f,start):
+
+def extractNoteData(f,start,end):
+    result = ""
+    with open(f,"r") as file:
+        for l_no,i in enumerate(file):
+            if l_no >= start:
+                if l_no > end-1:
+                    break
+                result = result + i
+    return result
+
+def extractData(f,start,stopPoint):
     result = ""
     endLine = 0
     with open(f,"r") as file:
         for l_no,i in enumerate(file):
             if l_no >= start-1:
-                if 'BeatmapSetID:' in i:
+                if stopPoint in i:
                     endLine = l_no+1
                     break
                 result = result + i
-    return result,endLine
-    
-def extractGeneralEditorData(f):
-    result = ""
-    endLine = 0
-    with open(f,"r") as file:
-        for l_no,i in enumerate(file):
-            if 'Version:' in i:
-                endLine = l_no+1
-                break
-            result = result + i
     return result,endLine
      
 file = "C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\1116467 Various Artists - 4K LN Dan Courses v2 - FINAL -\\Various Artists - 4K LN Dan Courses v2 - FINAL - (_underjoy) [15th Dan - Yume (Marathon)].osu"
