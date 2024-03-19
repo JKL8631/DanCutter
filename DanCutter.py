@@ -2,9 +2,16 @@ import re
 import os
 
 # Processing functions
+ 
+def processFilePath(file):
+    dir = ""
+    path = file.split("\\")
+    for i in range(0,len(path)-1):
+        dir = dir + path[i] + "\\"
+    return path[-1][0:-4],dir
 
 def breakFinder(f,start):
-    breaksNo = []
+    breaksLines = []
     breaksTPoints = []
     for l_no,line in enumerate(f,start):
         previous = extractTime(line)
@@ -12,10 +19,10 @@ def breakFinder(f,start):
     for l_no, line in enumerate(f,start=start+1):
         next = extractTime(line)
         if gapAnalyser(previous,next):
-            breaksNo.append(l_no)
+            breaksLines.append(l_no)
             breaksTPoints.append(previous)
         previous = next
-    return breaksNo,breaksTPoints
+    return breaksLines,breaksTPoints
 
 def gapAnalyser(note1,note2):
     return note2-note1 >= 3000
@@ -61,6 +68,20 @@ def countLinesInFile(file):
     return (count+1)
 
 # Variables extraction functions
+
+def getBreaks(file):
+    with open(file, "r") as f:
+        no = 0
+        for l_no, line in enumerate(f):
+            if '[HitObjects]' in line:
+                no = l_no + 1
+                break
+        result = []
+        temp = breakFinder(f,no)
+        result.append(temp[0])
+        result.append(temp[1])
+        result.append(no)
+        return result
 
 def getLastLineOfFileTime(file):
     with open(f'{file}', 'rb') as f:
@@ -146,21 +167,10 @@ def open_in_notepad(file_path):
 # Main program
     
 file = "C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\1116467 Various Artists - 4K LN Dan Courses v2 - FINAL -\\Various Artists - 4K LN Dan Courses v2 - FINAL - (_underjoy) [15th Dan - Yume (Marathon)].osu"
-file = "C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\Various_Artists_-_Chordjack_Joker_Dan\\Various Artists - Chordjack Joker Dan ([Crz]Rachel&Ice V) [Joker - CHI E_uOCy].osu"
-dir = ""
-path = file.split("\\")
-for i in range(0,len(path)-1):
-    dir = dir + path[i] + "\\"
-mapName = path[-1][0:-4]
+# file = "C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\Various_Artists_-_Chordjack_Joker_Dan\\Various Artists - Chordjack Joker Dan ([Crz]Rachel&Ice V) [Joker - CHI E_uOCy].osu"
+mapName,dir = processFilePath(file)
+breaksLines,breaksTPoints,no = getBreaks(file)
 with open(file, "r") as f:
-    no = 0
-    for l_no, line in enumerate(f):
-        if '[HitObjects]' in line:
-            no = l_no + 1
-            break
-    breaks = breakFinder(f,no)
-    breaksLines = breaks[0]
-    breaksTPoints = breaks[1]
     createFile(no,breaksLines[0],0,breaksTPoints[0],dir,mapName,file,1)
     for i in range(1,len(breaksLines)):
         createFile(breaksLines[i-1],breaksLines[i],breaksTPoints[i-1],breaksTPoints[i],dir,mapName,file,i+1)
