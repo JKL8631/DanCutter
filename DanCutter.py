@@ -1,5 +1,10 @@
 import re
 import os
+from tkinter import *
+from tkinter import ttk, filedialog
+from tkinter.filedialog import askopenfile
+import customtkinter
+from tkinter.messagebox import showinfo
 
 # Processing functions
  
@@ -164,14 +169,67 @@ def createFile(startingLine,endingLine,startingTPoint,endingTPoint,directory,map
 def open_in_notepad(file_path):
     os.system('start notepad.exe ' + file_path)
 
-# Main program
+# GUI functions
+
+def select_file():
+    filetypes = (
+        ('All types(*.*)', '*.*'),
+        ('Osu! Maps','*.osu')
+    )
+
+    filename = filedialog.askopenfilename(
+        title='Open a file',
+        initialdir='C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\1116467 Various Artists - 4K LN Dan Courses v2 - FINAL -\\',
+        filetypes=filetypes
+    )
     
+    set_text(filename)
+
+def set_text(text):
+    pathOfMap.delete(0,END)
+    pathOfMap.insert(0,text)
+    return
+    
+def testfunc():
+    showinfo(
+        title='Test',
+        message="to be done"
+    )
+    
+
+root = customtkinter.CTk()
+root.geometry("700x500")
+root.title("DanCutter")
+root.resizable(False,False)
+root.iconbitmap("danCutterLogo.ico")
+root.grid_columnconfigure(0,weight=1)
+file = ""
+breakLineFrame = customtkinter.CTkFrame(root)
+breakLineFrame.grid(row=1,column=0,padx=20,sticky="NSW")
+pathOfMap = customtkinter.CTkEntry(root, placeholder_text="Path to the map")
+
+infoBreakDisplay = customtkinter.CTkLabel(breakLineFrame, text="Length of a break in milliseconds : ", fg_color="transparent")
+breakLengthEntry = customtkinter.CTkEntry(breakLineFrame, placeholder_text="Ex : 3000")
+browseFileButton = customtkinter.CTkButton(root, text="Browse Files ...", command=select_file)
+findBreakButton = customtkinter.CTkButton(root, text="Find Breaks", command=testfunc)
+
+pathOfMap.grid(row=0, column=0, padx=20, pady=20, sticky="ew",columnspan=4)
+browseFileButton.grid(row=0, column=4,padx=20, pady=20, sticky="ew")
+infoBreakDisplay.grid(row=0,column=0,padx=20, sticky="w",columnspan=2)
+breakLengthEntry.grid(row=0,column=3,padx=20,pady=5, sticky="e")
+findBreakButton.grid(row=1,column=4,padx=20,pady=5)
+
+root.mainloop()
+
+
+# Main program
+  
 file = "C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\1116467 Various Artists - 4K LN Dan Courses v2 - FINAL -\\Various Artists - 4K LN Dan Courses v2 - FINAL - (_underjoy) [15th Dan - Yume (Marathon)].osu"
-# file = "C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\Various_Artists_-_Chordjack_Joker_Dan\\Various Artists - Chordjack Joker Dan ([Crz]Rachel&Ice V) [Joker - CHI E_uOCy].osu"
+#file = "C:\\Users\\labbe\\AppData\\Local\\osu!\\Songs\\Various_Artists_-_Bacon_Haniwa_dan\\Various Artists - Bacon Haniwa dan (Bacon Haniwa) [~EXTRA-EPSILON~].osu"
 mapName,dir = processFilePath(file)
 breaksLines,breaksTPoints,no = getBreaks(file)
-with open(file, "r") as f:
-    createFile(no,breaksLines[0],0,breaksTPoints[0],dir,mapName,file,1)
-    for i in range(1,len(breaksLines)):
-        createFile(breaksLines[i-1],breaksLines[i],breaksTPoints[i-1],breaksTPoints[i],dir,mapName,file,i+1)
-    createFile(breaksLines[-1],countLinesInFile(file),breaksTPoints[-1],getLastLineOfFileTime(file),dir,mapName,file,len(breaksLines)+1)
+# with open(file, "r") as f:
+#     createFile(no,breaksLines[0],0,breaksTPoints[0],dir,mapName,file,1)
+#     for i in range(1,len(breaksLines)):
+#         createFile(breaksLines[i-1],breaksLines[i],breaksTPoints[i-1],breaksTPoints[i],dir,mapName,file,i+1)
+#     createFile(breaksLines[-1],countLinesInFile(file),breaksTPoints[-1],getLastLineOfFileTime(file),dir,mapName,file,len(breaksLines)+1)
