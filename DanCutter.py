@@ -4,6 +4,7 @@ from tkinter import filedialog
 import customtkinter as cTk
 from tkinter.messagebox import showinfo
 import re
+import base64
 
 class App(cTk.CTk):
     
@@ -14,8 +15,10 @@ class App(cTk.CTk):
         self.geometry("700x200")
         self.title("DanCutter")
         self.resizable(False,False)
-        self.iconbitmap("danCutterLogo.ico")
         self.grid_columnconfigure(0,weight=1)
+
+        basedir = os.path.dirname(__file__)
+        self.iconbitmap(os.path.join(basedir, "danCutterLogo.ico"))
 
         self.pathFrame = pathFrame(self)
         self.breakFrame = breakFrame(self)
