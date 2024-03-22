@@ -4,7 +4,6 @@ from tkinter import filedialog
 import customtkinter as cTk
 from tkinter.messagebox import showinfo
 import re
-import base64
 
 class App(cTk.CTk):
     
