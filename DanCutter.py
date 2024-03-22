@@ -90,16 +90,19 @@ class breakFrame(cTk.CTkFrame):
                 title='Error !',
                 message="You must specify the map path and the break length !"
             )
+            return
         elif breakLength == "" and path != "":
             showinfo(
                 title='Error !',
                 message="You must specify the break length !"
             )
+            return
         elif breakLength != "" and path == "":
             showinfo(
                 title='Error !',
                 message="You must specify the map path !"
             )
+            return
         else :
             try:
                 breakLength = int(breakLength)
@@ -108,14 +111,23 @@ class breakFrame(cTk.CTkFrame):
                     title='Error !',
                     message="The break length must be a number !"
                 )
+                return
             if not os.path.isfile(path):
                 showinfo(
                     title='Error !',
                     message="This is not a valid path !"
                 )
-                
+                return
+            
             self.mapData = mapInfos(path,breakLength)
             
+            if breakLength <= 0 or breakLength >= self.mapData.totalMapLength:
+                showinfo(
+                    title='Error !',
+                    message="The break length is not valid !"
+                )
+                return
+
             parent.resultFrame.numberOfMapsLabel.configure(text=f"{len(self.mapData.breakLines)+1} maps have been found !")
             parent.resultFrame.splitMapsButton.configure(state="normal")
             parent.resultFrame.cancelOperationButton.configure(state="normal")
@@ -142,6 +154,7 @@ class resultFrame(cTk.CTkFrame):
         input2.delete(0,tk.END)
         self.splitMapsButton.configure(state="disabled")
         self.cancelOperationButton.configure(state="disabled")
+        self.numberOfMapsLabel.configure(text="You Must Find Maps First !")
         
     def splitMaps(self,mapData,path):
         mapName,directory = self.processFilePath(path)
