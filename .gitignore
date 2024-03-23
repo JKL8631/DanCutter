@@ -27,6 +27,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 build_config.json
+signApp.ps1
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
